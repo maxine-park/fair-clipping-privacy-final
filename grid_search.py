@@ -28,7 +28,6 @@ delta = 1 / (n_train ** 2)
 maj_clip_vals = [0.5, 0.75, 1.0]
 min_clip_vals = [1.0, 1.25, 1.5, 1.75, 2.0]
 
-# Generate once
 train_data = generate_data_weight_and_bias(n_train, dim, min_frac, min_signal, maj_signal, flip_min, flip_maj, seed)
 loader = make_dataloader_flags(train_data, batch_size=256)
 
@@ -36,7 +35,6 @@ val_data = generate_data_weight_and_bias(500, dim, min_frac, min_signal, maj_sig
 X_val, y_val, g_val = map(lambda x: torch.tensor(x, dtype=torch.float32), val_data)
 X_val_aug = augment_x(X_val, g_val.view(-1, 1))
 
-# Define this globally for each process
 def run_clipping_job(args):
     max_maj, max_min = args
     model = StratifiedLogisticRegression(dim)
@@ -58,8 +56,7 @@ def run_clipping_job(args):
         gap = abs(maj_mse - min_mse)
     print(f"Finished max_maj={max_maj}, max_min={max_min}, gap={gap:.4f}")
     return [max_maj, max_min, overall, maj_mse, min_mse, gap]
-
-# Run this block in a single notebook cell
+    
 def run_parallel_grid():
     os.makedirs("save_results", exist_ok=True)
     log_file = "save_results/grid_search_clip_results.csv"

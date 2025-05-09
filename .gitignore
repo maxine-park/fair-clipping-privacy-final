@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pkl
+*.csv
+logs/
+save_results/
